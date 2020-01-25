@@ -3,9 +3,9 @@ const h : number = window.innerHeight
 const backColor : string = "#BDBDBD"
 const fontFactor : number = 18
 const foreColor : string = "#3F51B5"
-const scGap : number = 0.02
-const delay : number = 20
+const delay : number = 25
 const lines : number = 5
+const scGap : number = 0.02 / lines
 const rFactor : number = 5
 const lineCap = 'round'
 const strokeFactor = 90
@@ -18,7 +18,7 @@ class ScaleUtil {
     }
 
     static divideScale(scale : number, i : number, n : number) : number {
-        return Math.min(1 / n, scale - i / n)
+        return Math.min(1 / n, ScaleUtil.maxScale(scale, i, n)) * n
     }
 
     static sinify(scale : number) : number {
@@ -44,9 +44,12 @@ class DrawingUtil {
     static drawStepLineCircleMover(context : CanvasRenderingContext2D, i : number, w : number, scale : number, j : number) {
         const gap : number = w / lines
         const sf : number  = ScaleUtil.sinify(scale)
-        const sfi : number  = ScaleUtil.divideScale(scale, i, lines)
-        const sfi1 : number = ScaleUtil.divideScale(scale, 0, 2)
-        const sfi2 : number = ScaleUtil.divideScale(scale, 1, 2)
+        const sfi : number  = ScaleUtil.divideScale(sf, i, lines)
+        if (sfi == 0) {
+            return
+        }
+        const sfi1 : number = ScaleUtil.divideScale(sfi, 0, 2)
+        const sfi2 : number = ScaleUtil.divideScale(sfi, 1, 2)
         const lineX2 : number = gap * sfi1
         const r : number = gap / rFactor
         const circleX  : number = gap * sfi2 + r
@@ -61,7 +64,7 @@ class DrawingUtil {
 
     static drawStepLineCircleMovers(context : CanvasRenderingContext2D, w : number, scale : number) {
         const scDiv : number = 1 / lines
-        const j : number = ScaleUtil.sinify(scale) / scDiv
+        const j : number = Math.floor(ScaleUtil.sinify(scale) / scDiv)
         for (var i = 0; i < lines; i++) {
             DrawingUtil.drawStepLineCircleMover(context, i, w, scale, j)
         }
@@ -98,13 +101,7 @@ class Stage {
     render() {
         this.context.fillStyle = backColor
         this.context.fillRect(0, 0, w, h) // x -> 0, y -> 0, width - w, height - h
-        this.context.fillStyle = foreColor
-        const fontSize = (Math.min(w, h) / fontFactor)
-        this.context.font = this.context.font.replace(/\d+/g, `${fontSize}`)
-        const text : string = `hello world`
-        const tw : number = this.context.measureText(text).width
-        const sf : number = ScaleUtil.sinify(this.state.scale)
-        this.context.fillText(text, (w / 2  - tw / 2) * sf, h / 2 - fontSize / 2)
+        DrawingUtil.drawSLCNode(this.context, 0, this.state.scale)
     }
 
     handleTap() {
