@@ -217,21 +217,25 @@ class SLCNode {
     }
 }
 
-// class StepLineCircle {
-//
-//     root : SLCNode = new SLCNode(0)
-//     curr : SLCNode = this.root
-//     dir : number = 1
-//
-//     constructor() {
-//
-//     }
-//
-//     draw(context : CanvasRenderingContext2D) {
-//         this.curr.draw(context)
-//     }
-//
-//     update(cb : Function) {
-//         this.c
-//     }
-// }
+class StepLineCircle {
+
+    root : SLCNode = new SLCNode(0)
+    curr : SLCNode = this.root
+    dir : number = 1
+
+    draw(context : CanvasRenderingContext2D) {
+        this.root.draw(context)
+    }
+
+    update(cb : Function) {
+        this.curr.update(() => {
+            this.curr = this.curr.getNext(this.dir, () => {
+                this.dir *= -1
+            })
+        })
+    }
+
+    startUpdating(cb : Function) {
+        this.curr.startUpdating(cb)
+    }
+}
