@@ -88,7 +88,7 @@ class Stage {
 
     canvas : HTMLCanvasElement = document.createElement('canvas')
     context : CanvasRenderingContext2D
-    state : State = new State()
+    slcNode : SLCNode = new SLCNode(2)
     animator : Animator = new Animator()
 
     initCanvas() {
@@ -101,14 +101,15 @@ class Stage {
     render() {
         this.context.fillStyle = backColor
         this.context.fillRect(0, 0, w, h) // x -> 0, y -> 0, width - w, height - h
-        DrawingUtil.drawSLCNode(this.context, 0, this.state.scale)
+        //DrawingUtil.drawSLCNode(this.context, 0, this.state.scale)
+        this.slcNode.draw(this.context)
     }
 
     handleTap() {
         this.canvas.onmousedown = () => {
-            this.state.startUpdating(() => {
+            this.slcNode.startUpdating(() => {
                 this.animator.start(() => {
-                    this.state.update(() => {
+                    this.slcNode.update(() => {
                         this.animator.stop()
                         this.render()
                     })
@@ -215,3 +216,22 @@ class SLCNode {
         return this
     }
 }
+
+// class StepLineCircle {
+//
+//     root : SLCNode = new SLCNode(0)
+//     curr : SLCNode = this.root
+//     dir : number = 1
+//
+//     constructor() {
+//
+//     }
+//
+//     draw(context : CanvasRenderingContext2D) {
+//         this.curr.draw(context)
+//     }
+//
+//     update(cb : Function) {
+//         this.c
+//     }
+// }
