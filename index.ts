@@ -3,8 +3,24 @@ const h : number = window.innerHeight
 const backColor : string = "#BDBDBD"
 const fontFactor : number = 18
 const foreColor : string = "#3F51B5"
-const scGap : number = 0.1
+const scGap : number = 0.02
 const delay : number = 50
+
+class ScaleUtil {
+
+    static maxScale(scale : number, i : number, n : number) : number {
+        return Math.max(0, scale - i / n)
+    }
+
+    static divideScale(scale : number, i : number, n : number) : number {
+        return Math.min(1 / n, scale - i / n)
+    }
+
+    static sinify(scale : number) : number {
+        return Math.sin(scale * Math.PI)
+    }
+}
+
 
 class Stage {
 
@@ -24,11 +40,11 @@ class Stage {
         this.context.fillStyle = backColor
         this.context.fillRect(0, 0, w, h) // x -> 0, y -> 0, width - w, height - h
         this.context.fillStyle = foreColor
-        const fontSize = (Math.min(w, h) / fontFactor) * this.state.scale
+        const fontSize = (Math.min(w, h) / fontFactor)
         this.context.font = this.context.font.replace(/\d+/g, `${fontSize}`)
         const text : string = `hello world`
         const tw : number = this.context.measureText(text).width
-        this.context.fillText(text, w / 2 - tw / 2, h / 2 - fontSize / 2)
+        this.context.fillText(text, (w / 2  - tw / 2) * this.state.scale, h / 2 - fontSize / 2)
     }
 
     handleTap() {
