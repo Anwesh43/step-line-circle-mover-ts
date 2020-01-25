@@ -3,7 +3,7 @@ const h : number = window.innerHeight
 const backColor : string = "#BDBDBD"
 const fontFactor : number = 18
 const foreColor : string = "#3F51B5"
-const scGap : number = 0.01
+const scGap : number = 0.1
 const delay : number = 50
 
 class Stage {
@@ -11,6 +11,8 @@ class Stage {
     canvas : HTMLCanvasElement = document.createElement('canvas')
     context : CanvasRenderingContext2D
     state : State = new State()
+    animator : Animator = new Animator()
+
     initCanvas() {
         this.canvas.width = w
         this.canvas.height = h
@@ -22,22 +24,23 @@ class Stage {
         this.context.fillStyle = backColor
         this.context.fillRect(0, 0, w, h) // x -> 0, y -> 0, width - w, height - h
         this.context.fillStyle = foreColor
-        const text : string = `hello world ${this.state.scale}`
-        const tw : number = this.context.measureText(text).width
-        const fontSize = Math.min(w, h) / fontFactor
+        const fontSize = (Math.min(w, h) / fontFactor) * this.state.scale
         this.context.font = this.context.font.replace(/\d+/g, `${fontSize}`)
+        const text : string = `hello world`
+        const tw : number = this.context.measureText(text).width
         this.context.fillText(text, w / 2 - tw / 2, h / 2 - fontSize / 2)
     }
 
     handleTap() {
         this.canvas.onmousedown = () => {
             this.state.startUpdating(() => {
-                const interval = setInterval(() => {
+                this.animator.start(() => {
                     this.state.update(() => {
-                        clearInterval(interval)
+                        this.animator.stop()
+                        this.render()
                     })
                     this.render()
-                }, delay)
+                })
             })
 
         }
